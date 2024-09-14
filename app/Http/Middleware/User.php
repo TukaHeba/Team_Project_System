@@ -8,7 +8,7 @@ use App\Services\ApiResponseService;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Manager
+class User
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class Manager
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || Auth::user()->role !== 'manager') {
+        if (!Auth::check() || Auth::user()->type !== 'user') {
             return ApiResponseService::error(null, 'Unauthorized access.', 403);
         }
         return $next($request);
