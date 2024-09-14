@@ -44,7 +44,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        // 'password' => 'hashed',
     ];
 
     /**
@@ -72,15 +72,26 @@ class User extends Authenticatable implements JWTSubject
      * 
      * @var array
      */
-    protected $guarded = ['role'];
+    protected $guarded = ['type'];
 
     /**
-     * Summary of setPasswordAttribute
-     * @param mixed $value
+     * Set the password attribute after hashing it.
+     *
+     * @param string $value 
      * @return void
      */
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    /**
+     * The projects that belong to the user.
+     *      
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
     }
 }
