@@ -80,7 +80,7 @@ class UserService
         try {
             $user->update($data);
 
-            if (isset($data['role'])) {
+            if (isset($data['type'])) {
                 $user->type = $data['type'];
                 $user->save();
             }
