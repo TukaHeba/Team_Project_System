@@ -41,10 +41,10 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:100',
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8|max:30',
-            'type' => 'required|string|in:admin,user'
+            'name' => 'nullable|string|max:100',
+            'email' => 'nullable|string|email|max:255',
+            'password' => 'nullable|string|min:8|max:30',
+            'type' => 'nullable|string|in:admin,user'
         ];
     }
     /**
@@ -70,7 +70,6 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'required' => 'The :attribute field is required.',
             'max' => 'The :attribute may not be greater than :max characters.',
             'min' => 'The :attribute must be at least :min characters.',
             'email.email' => 'The :attribute must be a valid email address.',

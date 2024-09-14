@@ -78,12 +78,11 @@ class UserService
     public function updateUser(User $user, array $data): ?User
     {
         try {
-            $user->update($data);
-
-            if (isset($data['type'])) {
-                $user->type = $data['type'];
-                $user->save();
-            }
+            $user->name = $data['name'] ?? $user->name;
+            $user->email = $data['email'] ?? $user->email;
+            $user->password = $data['password'] ?? $user->password;
+            $user->type = $data['type'] ?? $user->type;
+            $user->save();
 
             return $user;
         } catch (\Exception $e) {
