@@ -40,7 +40,7 @@ class UserService
     {
         try {
             $user = User::create($data);
-            $user->role = $data['role'];
+            $user->type = $data['type'];
             $user->save();
 
             return $user;
@@ -81,7 +81,7 @@ class UserService
             $user->update($data);
 
             if (isset($data['role'])) {
-                $user->role = $data['role'];
+                $user->type = $data['type'];
                 $user->save();
             }
 

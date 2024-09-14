@@ -44,7 +44,7 @@ class StoreUserRequest extends FormRequest
             'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|max:30|confirmed',
-            'role' => 'required|string|in:admin,manager,user'
+            'type' => 'required|string|in:admin,user'
         ];
     }
     /**
@@ -58,6 +58,7 @@ class StoreUserRequest extends FormRequest
             'name' => 'full name',
             'email' => 'email address',
             'password' => 'password',
+            'type' => 'user type',
         ];
     }
 
