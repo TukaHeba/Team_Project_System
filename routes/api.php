@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 
@@ -28,4 +29,6 @@ Route::controller(AuthController::class)->group(function () {
 // User Routes
 Route::apiResource('users', UserController::class)->middleware(['auth:api', 'admin']);
 
+// Project Routes
+Route::apiResource('projects', ProjectController::class)->middleware(['auth:api', 'admin']);
 
