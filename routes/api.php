@@ -32,3 +32,5 @@ Route::apiResource('users', UserController::class)->middleware(['auth:api', 'adm
 // Project Routes
 Route::apiResource('projects', ProjectController::class)->middleware(['auth:api', 'admin']);
 
+// Task Routes
+Route::apiResource('tasks', TaskController::class)->middleware(['auth:api', 'admin']);

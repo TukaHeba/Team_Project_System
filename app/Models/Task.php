@@ -26,6 +26,17 @@ class Task extends Model
         'hours',
     ];
 
+    #FIXME
+    protected $casts = [
+        'due_date' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    #TODO
+    // DATE ACCIRSS AND MUTOTOR
+
     /**
      * The user who is assigned to this task.     
      * 
