@@ -37,7 +37,48 @@ class Project extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'project_user')
+            ->withPivot('role', 'contribution_hours', 'last_activity')
+            ->withTimestamps();
     }
-    
+
+    /**
+     * Get the latest task based on creation date.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function latestTask()
+    {
+        return $this->hasOne(Task::class)->latestOfMany('created_at');
+    }
+
+    /**
+     * Get the oldest task based on creation date.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function oldestTask()
+    {
+        return $this->hasOne(Task::class)->oldestOfMany('created_at');
+    }
+
+    /**
+     * Get the latest updated task.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function latestUpdatedTask()
+    {
+        return $this->hasOne(Task::class)->latestOfMany('updated_at');
+    }
+
+    /**
+     * Get the oldest updated task.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function oldestUpdatedTask()
+    {
+        return $this->hasOne(Task::class)->oldestOfMany('updated_at');
+    }
 }
