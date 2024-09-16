@@ -47,13 +47,13 @@ class AuthService
 
         // $user->assignRole('client');
 
-        $token = Auth::login($user);
+        // $token = Auth::login($user);
 
         return [
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
-            'token' => $token,
+            // 'token' => $token,
             'code' => 201,
         ];
     }

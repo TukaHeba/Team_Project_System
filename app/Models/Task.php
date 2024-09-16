@@ -62,7 +62,7 @@ class Task extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    #FUXME assignedUser if needed
+    #FIXME assignedUser if needed
     public function user()
     {
         return $this->belongsTo(User::class, 'assigned_to');
