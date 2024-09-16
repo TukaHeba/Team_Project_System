@@ -4,14 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -97,13 +98,23 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Check if the user is an admin.
+     * Check if the user type is  admin.
      *
      * @return bool
      */
     public function isAdmin(): bool
     {
         return $this->type === 'admin';
+    }
+
+    /**
+     * Check if the user type is user.
+     *
+     * @return bool
+     */
+    public function isUser(): bool
+    {
+        return $this->type === 'user';
     }
 
     /**
@@ -119,54 +130,131 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Check if the user is a manager in the given project.
+     * Check if the user has a specific role in a given project.
      * 
-     * @param int $projectId
-     * @return bool
+     * i want to use this to handel permissions based on roles
+     * @param int $projectId 
+     * @param string $role 
+     * @return bool 
      */
-    public function isManager($projectId)
+    public function hasRoleInProject(int $projectId, string $role): bool
     {
         return $this->projects()
-            ->wherePivot('role', 'manager')
-            ->where('project_id', $projectId)
-            ->exists();
+            ->where('id', $projectId)
+            ->where('pivot_role', $role)->exists();
     }
 
     /**
-     * Check if the user is a tester in the given project.
-     * 
-     * @param int $projectId
-     * @return bool
+     * Check if the user has any of the specified roles in a given project.
+     *
+     * @param int $projectId 
+     * @param array $roles 
+     * @return bool 
      */
-    public function isTester($projectId)
+    public function hasAnyRoleInProject(int $projectId, array $roles): bool
     {
         return $this->projects()
-            ->wherePivot('role', 'tester')
-            ->where('project_id', $projectId)
-            ->exists();
+            ->where('id', $projectId)
+            ->whereIn('pivot_role', $roles)->exists();
     }
 
     /**
-     * Check if the user is a developer in the given project.
+     * Check if the user has a specific role for a given task & if he assigned to it
      * 
-     * @param int $projectId
-     * @return bool
+     * @param int $taskId 
+     * @param string $role 
+     * @return bool 
      */
-    public function isDeveloper($projectId)
+    public function hasRoleForTask(int $taskId, string $role): bool
     {
-        return $this->projects()
-            ->wherePivot('role', 'developer')
-            ->where('project_id', $projectId)
-            ->exists();
+        $task = Task::findOrFail($taskId);
+
+        $isAssignedToTask = $task->assigned_to === $this->id;
+        $hasRoleInProject = $this->hasRoleInProject($task->project_id, $role);
+
+        return $isAssignedToTask && $hasRoleInProject;
     }
 
     /**
-     * Get tasks assigned to the user.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * Check if the user is working on tasks within a given project.
+     *
+     * @param int $projectId 
+     * @return bool 
      */
-    public function tasks()
+    public function isWorkingInProject(int $projectId): bool
     {
-        return $this->hasManyThrough(Task::class, Project::class)->where('assigned_to', $this->id);
+        return $this->tasks()->where('project_id', $projectId)->exists();
+    }
+
+    /**
+     * Check if the user is a tester for a given task.
+     *
+     * @param int $taskId 
+     * @return bool 
+     */
+    public function isTesterInTask(int $taskId): bool
+    {
+        return $this->hasRoleForTask($taskId, 'tester');
+    }
+
+    /**
+     * Check if the user is a tester in a given project.
+     *
+     * @param int $projectId 
+     * @return bool 
+     */
+    public function isTesterInProject(int $projectId): bool
+    {
+        return $this->projects()
+            ->where('id', $projectId)
+            ->where('pivot_role', 'tester')->exists();
+    }
+
+    /**
+     * Check if the user is a manager for a given task.
+     *
+     * @param int $taskId 
+     * @return bool 
+     */
+    public function isManagerInTask(int $taskId): bool
+    {
+        return $this->hasRoleForTask($taskId, 'manager');
+    }
+
+    /**
+     * Check if the user is a manager in a given project.
+     *
+     * @param int $projectId 
+     * @return bool 
+     */
+    public function isManagerInProject(int $projectId): bool
+    {
+        return $this->projects()
+            ->where('id', $projectId)
+            ->where('pivot_role', 'manager')->exists();
+    }
+
+    /**
+     * Check if the user is a developer for a given task.
+     *
+     * @param int $taskId 
+     * @return bool 
+     */
+    public function isDeveloperInTask(int $taskId): bool
+    {
+        return $this->hasRoleForTask($taskId, 'developer');
+    }
+
+    /**
+     * Check if the user is a developer in a given project.
+     *
+     * @param int $projectId 
+     * @return bool 
+     */
+    public function isDeveloperInProject(int $projectId): bool
+    {
+        return $this->projects()
+            ->where('id', $projectId)
+            ->where('pivot_role', 'developer')->exists();
     }
 }
