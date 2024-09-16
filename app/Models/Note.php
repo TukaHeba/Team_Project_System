@@ -18,6 +18,7 @@ class Note extends Model
     protected $fillable = [
         'note',
         'task_id',
+        'written_by',
     ];
 
     /**
@@ -27,6 +28,16 @@ class Note extends Model
      */
     public function task()
     {
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(Task::class, 'task_id');
+    }
+
+    /**
+     * The user who wrote this note.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'written_by');
     }
 }
