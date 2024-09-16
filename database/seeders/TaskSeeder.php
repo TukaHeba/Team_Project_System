@@ -19,7 +19,7 @@ class TaskSeeder extends Seeder
             'priority' => 'high',
             'due_date' => '2024-09-19',
             'status' => 'in_progress',
-            'assigned_to' => 1, 
+            'assigned_to' => 2, 
             'project_id' => 1, 
             'hours' => 5,
         ]);
@@ -30,7 +30,7 @@ class TaskSeeder extends Seeder
             'due_date' => '2024-09-19',
             'status' => 'in_progress',
             'assigned_to' => 2, 
-            'project_id' => 1, 
+            'project_id' => 2, 
             'hours' => 15,
         ]);
         Task::create([
@@ -59,7 +59,7 @@ class TaskSeeder extends Seeder
             'priority' => 'medium',
             'due_date' => '2024-09-22',
             'status' => 'in_progress',
-            'assigned_to' => 1, 
+            'assigned_to' => 6, 
             'project_id' => 2, 
             'hours' => 7,
         ]);
@@ -69,7 +69,7 @@ class TaskSeeder extends Seeder
             'priority' => 'low',
             'due_date' => '2024-09-22',
             'status' => 'new',
-            'assigned_to' => 2, 
+            'assigned_to' => 6, 
             'project_id' => 7, 
             'hours' => 17,
         ]);
@@ -79,7 +79,7 @@ class TaskSeeder extends Seeder
             'priority' => 'low',
             'due_date' => '2024-09-22',
             'status' => 'new',
-            'assigned_to' => 2, 
+            'assigned_to' => 7, 
             'project_id' => 7, 
             'hours' => 13,
         ]);
@@ -89,8 +89,8 @@ class TaskSeeder extends Seeder
             'priority' => 'low',
             'due_date' => '2024-09-25',
             'status' => 'new',
-            'assigned_to' => null, 
-            'project_id' => 7, 
+            'assigned_to' => 7, 
+            'project_id' => 5, 
             'hours' => 4,
         ]);
         Task::create([
@@ -99,7 +99,7 @@ class TaskSeeder extends Seeder
             'priority' => 'low',
             'due_date' => '2024-09-22',
             'status' => 'new',
-            'assigned_to' => null, 
+            'assigned_to' => 5, 
             'project_id' => 7, 
             'hours' => 11,
         ]);
@@ -111,6 +111,66 @@ class TaskSeeder extends Seeder
             'status' => 'new',
             'assigned_to' => null, 
             'project_id' => 7, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 11',
+            'description' => 'Description of task 11',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => 3, 
+            'project_id' => 3, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 12',
+            'description' => 'Description of task 12',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => 4, 
+            'project_id' => 5, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 13',
+            'description' => 'Description of task 13',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => 5, 
+            'project_id' => 6, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 14',
+            'description' => 'Description of task 14',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => null, 
+            'project_id' => 8, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 15',
+            'description' => 'Description of task 15',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => null, 
+            'project_id' => 9, 
+            'hours' => 3,
+        ]);
+        Task::create([
+            'title' => 'Task 16',
+            'description' => 'Description of task 16',
+            'priority' => 'low',
+            'due_date' => '2024-09-22',
+            'status' => 'new',
+            'assigned_to' => null, 
+            'project_id' => 10, 
             'hours' => 3,
         ]);
     }

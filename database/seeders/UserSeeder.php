@@ -22,22 +22,40 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'manager',
-            'email' => 'manager@gmail.com',
+            'name' => 'manager1',
+            'email' => 'manager1@gmail.com',
+            'password' => '12345678',
+            'type' => 'user',
+        ]);
+        User::create([
+            'name' => 'manager2',
+            'email' => 'manager2@gmail.com',
             'password' => '12345678',
             'type' => 'user',
         ]);
 
         User::create([
-            'name' => 'developer',
-            'email' => 'developer@gmail.com',
+            'name' => 'developer1',
+            'email' => 'developer1@gmail.com',
+            'password' => '12345678',
+            'type' => 'user',
+        ]);
+        User::create([
+            'name' => 'developer2',
+            'email' => 'developer2@gmail.com',
             'password' => '12345678',
             'type' => 'user',
         ]);
 
         User::create([
-            'name' => 'tester',
-            'email' => 'tester@gmail.com',
+            'name' => 'tester1',
+            'email' => 'tester1@gmail.com',
+            'password' => '12345678',
+            'type' => 'user',
+        ]);
+        User::create([
+            'name' => 'tester2',
+            'email' => 'tester2@gmail.com',
             'password' => '12345678',
             'type' => 'user',
         ]);

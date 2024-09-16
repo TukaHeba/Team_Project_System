@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('note');
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
+            $table->foreignId('written_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
