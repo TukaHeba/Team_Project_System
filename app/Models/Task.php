@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Task extends Model
 {
@@ -26,22 +27,42 @@ class Task extends Model
         'hours',
     ];
 
-    #FIXME
+    /**
+     * The attributes that should be cast.
+     * 
+     * @var array
+     */
     protected $casts = [
-        'due_date' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        'due_date' => 'datetime',
     ];
 
-    #TODO
-    // DATE ACCIRSS AND MUTOTOR
+    /**
+     * Accessor for formatted due date.
+     * 
+     * @return string
+     */
+    public function getDueDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i');
+    }
+
+    /**
+     * Mutator for setting due date.
+     * 
+     * @param string $value
+     * @return void
+     */
+    public function setDueDateAttribute($value)
+    {
+        $this->attributes['due_date'] = Carbon::createFromFormat('d-m-Y H:i', $value)->format('Y-m-d H:i:s');
+    }
 
     /**
      * The user who is assigned to this task.     
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    #FUXME assignedUser if needed
     public function user()
     {
         return $this->belongsTo(User::class, 'assigned_to');
@@ -64,6 +85,6 @@ class Task extends Model
      */
     public function notes()
     {
-        return $this->hasMany(Note::class);
+        return $this->hasMany(Note::class, 'task_id');
     }
 }
