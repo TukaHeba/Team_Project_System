@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -86,12 +87,86 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * The projects that belong to the user.
-     *      
+     * The notes that are written by the user.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'written_by');
+    }
+
+    /**
+     * Check if the user is an admin.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
+
+    /**
+     * The projects that the user is involved in.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class, 'project_user')
+            ->withPivot('role', 'contribution_hours', 'last_activity')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the user is a manager in the given project.
+     * 
+     * @param int $projectId
+     * @return bool
+     */
+    public function isManager($projectId)
+    {
+        return $this->projects()
+            ->wherePivot('role', 'manager')
+            ->where('project_id', $projectId)
+            ->exists();
+    }
+
+    /**
+     * Check if the user is a tester in the given project.
+     * 
+     * @param int $projectId
+     * @return bool
+     */
+    public function isTester($projectId)
+    {
+        return $this->projects()
+            ->wherePivot('role', 'tester')
+            ->where('project_id', $projectId)
+            ->exists();
+    }
+
+    /**
+     * Check if the user is a developer in the given project.
+     * 
+     * @param int $projectId
+     * @return bool
+     */
+    public function isDeveloper($projectId)
+    {
+        return $this->projects()
+            ->wherePivot('role', 'developer')
+            ->where('project_id', $projectId)
+            ->exists();
+    }
+
+    /**
+     * Get tasks assigned to the user.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, Project::class)->where('assigned_to', $this->id);
     }
 }
