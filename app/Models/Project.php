@@ -43,17 +43,7 @@ class Project extends Model
     }
 
     /**
-     * Get the latest task based on creation date.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function latestTask()
-    {
-        return $this->hasOne(Task::class)->latestOfMany('created_at');
-    }
-
-    /**
-     * Get the oldest task based on creation date.
+     * Get the oldest task based on the creation date.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -63,22 +53,24 @@ class Project extends Model
     }
 
     /**
-     * Get the latest updated task.
+     * Get the oldest task based on the create date or updated date.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function latestUpdatedTask()
+    public function latestTask()
     {
-        return $this->hasOne(Task::class)->latestOfMany('updated_at');
+        return $this->hasOne(Task::class)->latestOfMany(['created_at', 'updated_at']);
     }
 
     /**
-     * Get the oldest updated task.
+     * Get the task with the maximum priority and specific title.
      * 
+     * @param mixed $title
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function oldestUpdatedTask()
+    public function maxPriorityWithTitle($title)
     {
-        return $this->hasOne(Task::class)->oldestOfMany('updated_at');
+        return $this->hasOne(Task::class)->where('priority', 'high')
+            ->where('title', 'LIKE', '%' . $title . '%');
     }
 }

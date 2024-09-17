@@ -89,6 +89,26 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Check if the user type is  admin.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
+
+    /**
+     * Check if the user type is user.
+     *
+     * @return bool
+     */
+    public function isUser(): bool
+    {
+        return $this->type === 'user';
+    }
+
+    /**
      * The notes that are written by the user.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -129,26 +149,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Check if the user type is  admin.
-     *
-     * @return bool
-     */
-    public function isAdmin(): bool
-    {
-        return $this->type === 'admin';
-    }
-
-    /**
-     * Check if the user type is user.
-     *
-     * @return bool
-     */
-    public function isUser(): bool
-    {
-        return $this->type === 'user';
-    }
-
-    /**
      * The projects that the user is involved in.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -162,17 +162,17 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Check if the user has a specific role in a given project.
-     * 
-     * i want to use this to handel permissions based on roles
-     * @param int $projectId 
-     * @param string $role 
-     * @return bool 
+     *
+     * @param int $projectId
+     * @param string $role
+     * @return bool
      */
     public function hasRoleInProject(int $projectId, string $role): bool
     {
         return $this->projects()
-            ->where('projects.id', $projectId)
-            ->where('project_user.role', $role)->exists();
+            ->wherePivot('role', $role)
+            ->wherePivot('project_id', $projectId)
+            ->exists();
     }
 
     /**
@@ -217,76 +217,45 @@ class User extends Authenticatable implements JWTSubject
         return $this->tasks()->where('project_id', $projectId)->exists();
     }
 
-    #TODO tuka dont forget to delete helpers that u dont use it when u finish the project
     /**
-     * Check if the user is a tester for a given task.
+     * Filter tasks by status and priority using whereRelation.
      *
-     * @param int $taskId 
-     * @return bool 
+     * @param string|null $status
+     * @param string|null $priority
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function isTesterInTask(int $taskId): bool
+    public function filterTasks($status = null, $priority = null)
     {
-        return $this->hasRoleForTask($taskId, 'tester');
+        $query = $this->tasks();
+
+        if ($status) {
+            $query->whereRelation('tasks', 'status', '=', $status);
+        }
+
+        if ($priority) {
+            $query->whereRelation('tasks', 'priority', '=', $priority);
+        }
+
+        return $query->get();
     }
 
     /**
-     * Check if the user is a tester in a given project.
+     * Get the oldest task based on the creation date.
      *
-     * @param int $projectId 
-     * @return bool 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function isTesterInProject(int $projectId): bool
+    public function oldestTask()
     {
-        return $this->projects()
-            ->where('id', $projectId)
-            ->where('pivot_role', 'tester')->exists();
+        return $this->hasOne(Task::class)->oldestOfMany('created_at');
     }
 
     /**
-     * Check if the user is a manager for a given task.
-     *
-     * @param int $taskId 
-     * @return bool 
+     * Get the oldest task based on the create date or updated date.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function isManagerInTask(int $taskId): bool
+    public function latestTask()
     {
-        return $this->hasRoleForTask($taskId, 'manager');
-    }
-
-    /**
-     * Check if the user is a manager in a given project.
-     *
-     * @param int $projectId 
-     * @return bool 
-     */
-    public function isManagerInProject(int $projectId): bool
-    {
-        return $this->projects()
-            ->where('id', $projectId)
-            ->where('pivot_role', 'manager')->exists();
-    }
-
-    /**
-     * Check if the user is a developer for a given task.
-     *
-     * @param int $taskId 
-     * @return bool 
-     */
-    public function isDeveloperInTask(int $taskId): bool
-    {
-        return $this->hasRoleForTask($taskId, 'developer');
-    }
-
-    /**
-     * Check if the user is a developer in a given project.
-     *
-     * @param int $projectId 
-     * @return bool 
-     */
-    public function isDeveloperInProject(int $projectId): bool
-    {
-        return $this->projects()
-            ->where('id', $projectId)
-            ->where('pivot_role', 'developer')->exists();
+        return $this->hasOne(Task::class)->latestOfMany(['created_at', 'updated_at']);
     }
 }

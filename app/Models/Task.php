@@ -62,7 +62,6 @@ class Task extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    #FIXME assignedUser if needed
     public function user()
     {
         return $this->belongsTo(User::class, 'assigned_to');
@@ -86,5 +85,15 @@ class Task extends Model
     public function notes()
     {
         return $this->hasMany(Note::class, 'task_id');
+    }
+
+    /**
+     * Get the latest task date (either created_at or updated_at).
+     *
+     * @return string
+     */
+    public function getLatestActivityAttribute()
+    {
+        return $this->created_at > $this->updated_at ? $this->created_at : $this->updated_at;
     }
 }
