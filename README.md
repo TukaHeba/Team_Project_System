@@ -34,7 +34,7 @@ Ensure you have the following installed on your machine:
 
 1. Clone the Repository  
    ```bash
-   git clone https://github.com/TukaHeba/Team_Project.git
+   git clone https://github.com/TukaHeba/Team_Project_System.git
 2. Navigate to the Project Directory
    ```bash
    cd Team_Project
