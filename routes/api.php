@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
@@ -34,3 +35,12 @@ Route::apiResource('projects', ProjectController::class)->middleware(['auth:api'
 
 // Task Routes
 Route::apiResource('tasks', TaskController::class)->middleware(['auth:api', 'admin']);
+
+// Note Routes
+Route::controller(NoteController::class)->group(function () {
+    Route::get('tasks/{taskId}/notes', 'index')->middleware('auth:api');
+    Route::post('tasks/{taskId}/notes', 'store')->middleware('auth:api');
+    Route::get('tasks/{taskId}/notes/{noteId}', 'show')->middleware('auth:api');
+    Route::put('tasks/{taskId}/notes/{noteId}', 'update')->middleware('auth:api');
+    Route::delete('tasks/{taskId}/notes/{noteId}', 'destroy')->middleware('auth:api');
+});
