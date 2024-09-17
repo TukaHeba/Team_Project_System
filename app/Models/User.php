@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -98,6 +99,36 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the tasks assigned to this user.
+     * This will be by one to many relationship between user-task
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    /**
+     * The tasks that are assigned to this user through projects.
+     * This will be by many to many relationship between user-project
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function tasksByProjects()
+    {
+        return $this->hasManyThrough(
+            Task::class,
+            ProjectUser::class,
+            'user_id',         // Foreign key on ProjectUser table
+            'project_id',      // Foreign key on Task table
+            'id',              // Local key on User table
+            'project_id'       // Local key on ProjectUser table
+        );
+        #TODO re-check the kyes again
+    }
+
+    /**
      * Check if the user type is  admin.
      *
      * @return bool
@@ -140,8 +171,8 @@ class User extends Authenticatable implements JWTSubject
     public function hasRoleInProject(int $projectId, string $role): bool
     {
         return $this->projects()
-            ->where('id', $projectId)
-            ->where('pivot_role', $role)->exists();
+            ->where('projects.id', $projectId)
+            ->where('project_user.role', $role)->exists();
     }
 
     /**
@@ -154,8 +185,8 @@ class User extends Authenticatable implements JWTSubject
     public function hasAnyRoleInProject(int $projectId, array $roles): bool
     {
         return $this->projects()
-            ->where('id', $projectId)
-            ->whereIn('pivot_role', $roles)->exists();
+            ->where('projects.id', $projectId)
+            ->whereIn('project_user.role', $roles)->exists();
     }
 
     /**
@@ -165,7 +196,7 @@ class User extends Authenticatable implements JWTSubject
      * @param string $role 
      * @return bool 
      */
-    public function hasRoleForTask(int $taskId, string $role): bool
+    public function hasRoleInTask(int $taskId, string $role): bool
     {
         $task = Task::findOrFail($taskId);
 
@@ -186,6 +217,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->tasks()->where('project_id', $projectId)->exists();
     }
 
+    #TODO tuka dont forget to delete helpers that u dont use it when u finish the project
     /**
      * Check if the user is a tester for a given task.
      *
