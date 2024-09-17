@@ -10,7 +10,7 @@ class ProjectUser extends Model
 {
     use HasFactory, SoftDeletes;
 
-protected $table = 'project_user'; 
+    protected $table = 'project_user';
 
     /**
      * The attributes that are mass assignable.
@@ -48,4 +48,30 @@ protected $table = 'project_user';
     public function user()
     {
         return $this->belongsTo(User::class);
-    }}
+    }
+
+    /**
+     * Update contribution_hours & last_activity attributes
+     * 
+     * Calculate all task hours for a user in a specific project
+     * Get the latest activity from tasks assigned to the user
+     * Then update the pivot table with the new data
+     * @return void
+     */
+    public function updateTableData()
+    {
+        $contributionHours = Task::where('project_id', $this->project_id)
+            ->where('assigned_to', $this->user_id)
+            ->sum('hours');
+
+        $lastActivity = Task::where('project_id', $this->project_id)
+            ->where('assigned_to', $this->user_id)
+            ->latest('updated_at')
+            ->value('updated_at') ?? now();
+
+        $this->update([
+            'contribution_hours' => $contributionHours,
+            'last_activity' => $lastActivity,
+        ]);
+    }
+}

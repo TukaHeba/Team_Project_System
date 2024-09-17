@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
+use App\Models\ProjectUser;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -242,6 +243,37 @@ class TaskService
         } catch (\Exception $e) {
             Log::error('Failed to update task status: ' . $e->getMessage());
             throw new \Exception('An error occurred on the server.');
+        }
+    }
+
+    /**
+     * Summary of updateContributionData
+     * @param int $projectId
+     * @param int $userId
+     * @throws \Exception
+     * @return void
+     */
+    /**
+     * Update pivot data for a given project and user.
+     *
+     * @param int $projectId
+     * @param int $userId
+     * @throws \Exception
+     * @return void
+     */
+    public function updatePivotData(int $projectId, int $userId)
+    {
+        try {
+            $projectUser = ProjectUser::where('project_id', $projectId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($projectUser) {
+                $projectUser->updateTableData();
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to update contribution data: ' . $e->getMessage());
+            throw new \Exception('An error occurred while updating contribution data.');
         }
     }
 }

@@ -47,7 +47,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created tasks.
+     * Store a newly created tasks and update the pivot table related data
      * 
      * @param StoreTaskRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -58,12 +58,14 @@ class TaskController extends Controller
 
         try {
             $task = $this->taskService->createTask($validated);
+
+            $this->taskService->updatePivotData($task->project_id, $task->assigned_to);
+
             return ApiResponseService::success(new TaskResource($task), 'Task created successfully', 201);
         } catch (\Exception $e) {
             return ApiResponseService::error('An error occurred on the server.', 500);
         }
     }
-
     /**
      * Display the specified task.
      * 
@@ -81,7 +83,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified task.
+     * Update the specified task and pivot table related data
      * 
      * @param \App\Http\Requests\UpdateTaskRequest $request
      * @param \App\Models\Task $task
@@ -95,12 +97,13 @@ class TaskController extends Controller
         try {
             $updatedTask = $this->taskService->updateTask($task, $validated, $user);
 
+            $this->taskService->updatePivotData($task->project_id, $task->assigned_to);
+
             return ApiResponseService::success(new TaskResource($updatedTask), 'Task updated successfully', 200);
         } catch (\Exception $e) {
             return ApiResponseService::error('An error occurred on the server.', 500);
         }
     }
-
     /**
      * Remove the specified task.
      * 
