@@ -48,7 +48,7 @@ Route::controller(NoteController::class)->group(function () {
 // Task Routes
 Route::controller(TaskController::class)->group(function () {
 
-    // Task CRUD Routes with middleware
+    // Task CRUD Routes
     Route::apiResource('tasks', TaskController::class)->middleware('auth:api');
 
     // Get the latest task for a project
